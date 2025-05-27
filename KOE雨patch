@@ -1,0 +1,175 @@
+/**
+
+
+@name KathyOptimisedEnglish Amenekode Ver.
+,
+@version 1.0.0
+,
+@description Translates Discord UI text into Kathy's Optimised English orthography
+,
+@author Kathy*/
+,
+
+const config = {
+  info: {
+    name: "KathyOptimisedEnglish",
+    authors: [{ name: "Kathy" }],
+    version: "1.0.0",
+    description: "Translates Discord UI text into Kathy's Optimised English orthography. Fixed by Amenekode."
+  }
+};
+
+module.exports = (() => {
+  const wordMap = {
+    // Manual exceptions
+    'account': 'akkount',
+    'security': 'sekurity',
+    'discord': 'diskord',
+    'service': 'servise',
+    'community': 'kommunity',
+    'will': 'ƿill',
+    'show': 'shoƿ',
+    'esc': 'esk',
+    'icloud': 'ikloud',
+    'authentication': 'auþentikation',
+    'password': 'passƿord',
+    'change': 'tshange',
+    'the': 'Ðe',
+    'christ': 'kkrist',
+    'choccy': 'tshokky',
+    'law': 'laƿ',
+    'socials': 'soshials',
+    'news': 'neƿs',
+    'swear': 'sƿear',
+    'know': 'knoƿ',
+    'these': 'ðese',
+    'they': 'ðey',
+    'renew': 'reneƿ',
+    'micheal': 'mikkeal',
+    'idkhow': 'idkhoƿ',
+　　　'new': 'neƿ',
+　  'timeworks': 'timeƿorks',
+　  'answer': 'ansƿer',
+　 'there': 'ðere',
+  'how': 'hoƿ',
+  'nothing': 'noþiŋ',
+  'theatre': 'þeatre',
+  'law2237': 'laƿ2237',
+  'view': 'vieƿ',
+  'www': 'ƿƿƿ',
+  'this': 'ðis',
+  'changeling': 'tshangelog',
+  'that': 'ðat',
+  'lowkey': 'loƿkey',
+  'shadow': 'shadoƿ',
+  'however': 'hoƿever',
+  'other': 'oðer',
+  'unaware': 'unaƿare',
+  'though': 'ðouȝ',
+  'mawston': 'maƿstone',
+  'echo': 'ekko',
+  'zwolle': 'zƿolle',
+  'bother': 'boðer',
+  'kikuoworld': 'kikuoƿorld',
+  'sword': 'sƿord',
+  'either': 'eiþer',
+  'switch': 'sƿittsh',
+  'between': 'betƿeen',
+  'then': 'ðen',
+  'changelog': 'tshangelog',
+  };
+
+function replaceWords(text) {
+  return text.replace(/\b\w+\b/g, function (word) {
+    const lower = word.toLowerCase();
+    if (wordMap[lower]) {
+      const replacement = wordMap[lower];
+      // Preserve capitalization
+      if (word[0] === word[0].toUpperCase()) {
+        return replacement.charAt(0).toUpperCase() + replacement.slice(1);
+      }
+      return replacement;
+    }
+    return word;
+  });
+}
+
+  const replaceText = (text) => {
+    if (!text || typeof text !== 'string') return text;
+
+    let original = text;
+
+    // Handle wordMap replacements first
+    for (let [key, value] of Object.entries(wordMap)) {
+      const regex = new RegExp(\\b${key}\\b, 'gi');
+      text = text.replace(regex, (match) => preserveCase(match, value));
+    }
+
+    // Core Kathy rules
+    text = text
+      .replace(/c(?!h)(?=e|i|y)/gi, (match) => match === 'c' ? 's' : 'S')        // soft c → s
+      .replace(/c(?!h)/gi, (match) => match === 'c' ? 'k' : 'K')                 // hard c → k
+      .replace(/ch/gi, (match) => match === 'ch' ? 'tsh' : 'Tsh')               // ch → tsh
+      .replace(/gh/gi, (match) => match === 'gh' ? 'ȝ' : 'Ȝ')                   // gh → ȝ
+      .replace(/ng/gi, (match) => match === 'ng' ? 'ŋ' : 'Ŋ')                   // ng → ŋ
+      .replace(/th/gi, (match) => match === 'th' ? 'þ' : 'Þ')                   // th → þ
+      .replace(/ð/gi, (match) => match === 'ð' ? 'ð' : 'Ð')                     // already voiced ths
+      .replace(/\bW/gi, (match) => match === 'W' ? 'Ƿ' : 'ƿ');                  // w → ƿ
+
+    return text;
+  };
+
+  const preserveCase = (original, replacement) => {
+    if (original === original.toUpperCase()) return replacement.toUpperCase();
+    if (original[0] === original[0].toUpperCase()) return replacement[0].toUpperCase() + replacement.slice(1);
+    return replacement;
+  };
+
+  const processElement = (node) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      node.textContent = replaceText(node.textContent);
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+      for (let child of node.childNodes) {
+        processElement(child);
+      }
+    }
+  };
+
+  const observer = new MutationObserver((mutations) => {
+    for (const
+mutation of mutations) {
+      for (const node of mutation.addedNodes) {
+        processElement(node)
+.split('') .reverse().join('');
+
+      }
+    }
+  });
+
+  return class {
+    start() {
+      processElement(document.body);
+      observer.observe(document.body, { childList: true, subtree: true });
+    }
+
+    stop() {
+      observer.disconnect();
+    }
+
+    getName() {
+      return config.info.name;
+    }
+
+    getDescription() {
+      return config.info.description;
+    }
+
+    getVersion() {
+      return config.info.version;
+    }
+
+    getAuthor() {
+      return config.info.authors.map(a => a.name).join(", ");
+    }
+  };
+})();
