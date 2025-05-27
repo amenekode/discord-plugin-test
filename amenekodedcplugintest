@@ -1,0 +1,22 @@
+/**
+ * @name amenekodeplugin1
+ * @author amenekode
+ * @description boring test plugin, should change yes to no and vice versa. love ya mama
+ * @version 0.0.1
+ */
+
+const config = { 
+  info: {
+   name 'AmeNekodeTest',
+  authors:[{ name: 'Sylv' }],
+  version: '0.0.1TB' 
+  description "A plugin to test Sylv's capabilities, changed yes to no and no to yes. Works as a troubleshooter too"
+  }
+};
+
+module.exports = (() => {
+  const wordMap = {
+  // Manual exceptions
+'no': 'yes',
+'yes': 'no',
+}; 
